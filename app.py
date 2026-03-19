@@ -16,7 +16,7 @@ from agent import run_agent
 load_dotenv()
 init_db()
 
-api_key = os.getenv("GROQ_API_KEY", "")
+api_key = st.secrets.get("GROQ_API_KEY", "") or os.getenv("GROQ_API_KEY", "")
 
 # ==========================================
 # 1. Page Config & CSS
