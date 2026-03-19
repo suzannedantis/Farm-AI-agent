@@ -1,7 +1,7 @@
 import streamlit as st
 from typing import TypedDict, Optional
 from langchain_groq import ChatGroq
-from langchain_community.tools import DuckDuckGoSearchRun
+from duckduckgo_search import DDGS
 from langgraph.graph import StateGraph, START, END
 
 from weather import get_weather_full, format_weather_for_llm
@@ -91,7 +91,13 @@ def run_agent(
         model_name="llama-3.3-70b-versatile",
         api_key=api_key,
     )
-    search_tool = DuckDuckGoSearchRun()
+    def ddgs_search(query: str) -> str:
+        try:
+            with DDGS() as ddgs:
+                results = list(ddgs.text(query, max_results=5))
+            return "\n".join(f"{r.get('title','')}: {r.get('body','')}" for r in results)
+        except Exception as e:
+            return f"Search failed: {e}"
 
     def _log(msg: str):
         log_container.markdown(msg)
@@ -157,7 +163,7 @@ def run_agent(
 
         _log("🌐 **Executor:** Searching agricultural databases...")
         try:
-            search_results = search_tool.invoke(state["planned_search_query"])
+            search_results = ddgs_search(state["planned_search_query"])
         except Exception:
             search_results = "Web search failed. Proceeding with general agricultural knowledge."
 
