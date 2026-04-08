@@ -1,7 +1,7 @@
 import streamlit as st
 from typing import TypedDict, Optional
 from langchain_groq import ChatGroq
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 from langgraph.graph import StateGraph, START, END
 
 from weather import get_weather_full, format_weather_for_llm
